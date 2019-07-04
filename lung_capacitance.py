@@ -29,14 +29,14 @@ for i in range(3):
 
     # Red, Green & Blue for the three different plots.
     if i == 0:
-        ax.plot(a, b+nse[i], c='r', label='Patient Data')
+        ax.scatter(a, b+nse[i], c='r', marker='.', label='Trial #%d' % (i+1))
     elif i == 1: 
-        ax.plot(a, b+nse[i], c='b', label='Patient Data')
+        ax.scatter(a, b+nse[i], c='b', marker='.', label='Trial #%d' % (i+1))
     elif i == 2: 
-        ax.plot(a, b+nse[i], c='g', label='Patient Data')
+        ax.scatter(a, b+nse[i], c='g', marker='.', label='Trial #%d' % (i+1))
 
     # Customisation regarding axis.
-    ax.set_label('Test Data')
+    # ax.set_label('Test Data')
     ax.set_title('Spirometry Test %d' % (i+1))
     ax.set_ylabel('Capacity (L)')
     ax.set_xlabel('Time (s)')
