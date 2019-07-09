@@ -1,23 +1,49 @@
 # Import the required libraries.
 import math
-import sympy as sp
 import numpy as np
 import matplotlib.pyplot as plt
+from scipy.optimize import curve_fit
 import matplotlib.gridspec as gridspec
 
-# Define 'x' and 'f'.
-x = sp.symbols('x')
-f = 5 - 5 * math.e**(-3.5*x)
+# ===== FUNCTIONS ===== #
 
-# Define an array of numbers.
-b = []
-a = np.linspace(0, 5, 100)
-for i in a: b.append(f.subs(x, i))
+# Fit the curve to this.
+def func(x, a, b, c):
+    return a - b * np.exp(-c * x)
+
+# Output summary report.
+def output(yc1, yc2, yc3, tpi):
+    print('')
+    print('=== SUMMARY REPORT ===')
+    print('')
+    print('FEV1 Trial #1:', '%.4f' % yc1[FEV1_INDEX], 'L')
+    print('FVC Trial #1: ', '%.4f' % yc1[FVC_INDEX], 'L')
+    print('')
+    print('FEV1 Trial #2:', '%.4f' % yc2[FEV1_INDEX], 'L')
+    print('FVC Trial #2: ', '%.4f' % yc2[FVC_INDEX], 'L')
+    print('')
+    print('FEV1 Trial #3:', '%.4f' % yc3[FEV1_INDEX], 'L')
+    print('FVC Trial #3 :', '%.4f' % yc3[FVC_INDEX], 'L')
+    print('')
+    print('Average Tiffeneau-Pinelli Index: ', '%.4f' % tpi)
+    print('')
+    print('=== SUMMARY REPORT ===')
+    print('')
+
+# ===== END FUNCTIONS ===== #
+
+# Define amount of data points and initial curve.
+x = np.linspace(0, 5, 100)
+y = func(x, 5, 5, 2)
 
 # Generate noise.
-nse = []
-for i in range(3): nse.append(np.random.normal(0,0.05,len(a)))
-nse.append(np.array((nse[0] + nse[1] + nse[2])/3))
+yn1 = y + np.random.normal(0,0.1,len(x))
+yn2 = y + np.random.normal(0,0.4,len(x))
+yn3 = y + np.random.normal(0,0.6,len(x))
+
+# Hash defines go here.
+FEV1_INDEX = int(len(x)/5 - 1)
+FVC_INDEX = int(len(x) - 1)
 
 # Create the figure and divide it into 2 by 3 grid.
 fig = plt.figure(tight_layout=True)
@@ -25,20 +51,19 @@ gs = gridspec.GridSpec(2, 3)
 
 # Create the 3 subplots at the top.
 for i in range(3):
+
+    # Add the subplot.
     ax = fig.add_subplot(gs[0, i])
 
     # Red, Green & Blue for the three different plots.
-    if i == 0:
-        ax.scatter(a, b+nse[i], c='r', marker='.', label='Trial #%d' % (i+1))
-    elif i == 1: 
-        ax.scatter(a, b+nse[i], c='b', marker='.', label='Trial #%d' % (i+1))
-    elif i == 2: 
-        ax.scatter(a, b+nse[i], c='g', marker='.', label='Trial #%d' % (i+1))
+    if i == 0: ax.scatter(x, yn1, c='r', marker='.', label='Trial #%d' % (i+1))
+    elif i == 1: ax.scatter(x, yn2, c='b', marker='.', label='Trial #%d' % (i+1))
+    else: ax.scatter(x, yn3, c='g', marker='.', label='Trial #%d' % (i+1))
 
     # Customisation regarding axis.
     # ax.set_label('Test Data')
     ax.set_title('Spirometry Test %d' % (i+1))
-    ax.set_ylabel('Capacity (L)')
+    ax.set_ylabel('Volume of Air (L)')
     ax.set_xlabel('Time (s)')
     ax.set_yticks(np.arange(0, 6, step=1))
     ax.set_xticks(np.arange(0, 6, step=1))
@@ -48,16 +73,35 @@ for i in range(3):
 # Align the labels.   
 fig.align_labels()
 
+# Find the variables for the curve fit.
+popt1, pcov1 = curve_fit(func, x, yn1)
+popt2, pcov2 = curve_fit(func, x, yn2)
+popt3, pcov3 = curve_fit(func, x, yn3)
+yc1 = func(x, *popt1)
+yc2 = func(x, *popt2)
+yc3 = func(x, *popt3)
+tpi = round(float((yc1[FEV1_INDEX]/yc1[FVC_INDEX] + yc2[FEV1_INDEX]/yc2[FVC_INDEX] + yc3[FEV1_INDEX]/yc3[FVC_INDEX])/3), 4)
+
+# Output summary report.
+output(yc1, yc2, yc3, tpi)
+
 # Create the averaged subplot at the bottom.
 ax = fig.add_subplot(gs[1, :])
-ax.plot(a, b+nse[3], c='black', label='Averaged Data')
-ax.set_ylabel('Capacity (L)')
+ax.plot(x, yc1, 'r-', label="Fitted Curve: Trial #1")
+ax.plot(x, yc2, 'b-', label="Fitted Curve: Trial #2")
+ax.plot(x, yc3, 'g-', label="Fitted Curve: Trial #3")
+ax.set_ylabel('Volume of Air (L)')
 ax.set_xlabel('Time (s)')
 ax.set_yticks(np.arange(0, 6, step=1))
 ax.set_xticks(np.arange(0, 6, step=1))
 ax.set_title('Spirometry Results')
+ax.text(1,1, "Tiffeneau-Pinelli Index: " + str(tpi))
 ax.grid(True)
 ax.legend()
 
-# Show figure.
-plt.show()
+# # Show figure.
+# plt.show()
+
+# Save figure.
+plt.savefig('output/lung_capacity.png')
+plt.close(fig)
