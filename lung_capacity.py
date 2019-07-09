@@ -38,8 +38,11 @@ y = func(x, 5, 5, 2)
 
 # Generate noise.
 yn1 = y + np.random.normal(0,0.1,len(x))
+yn1[0] = 0
 yn2 = y + np.random.normal(0,0.4,len(x))
+yn2[0] = 0
 yn3 = y + np.random.normal(0,0.6,len(x))
+yn3[0] = 0
 
 # Hash defines go here.
 FEV1_INDEX = int(len(x)/5 - 1)
@@ -99,9 +102,9 @@ ax.text(1,1, "Tiffeneau-Pinelli Index: " + str(tpi))
 ax.grid(True)
 ax.legend()
 
-# # Show figure.
-# plt.show()
+# Show figure.
+plt.show()
 
-# Save figure.
-plt.savefig('output/lung_capacity.png')
-plt.close(fig)
+# # Save figure.
+# plt.savefig('output/lung_capacity.png')
+# plt.close(fig)
