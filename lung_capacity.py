@@ -12,7 +12,7 @@ def func(x, a, b, c):
     return a - b * np.exp(-c * x)
 
 # Output summary report.
-def output(yc1, yc2, yc3, tpi):
+def output(yc1, yc2, yc3, tpi, ci):
     print('')
     print('=== SUMMARY REPORT ===')
     print('')
@@ -27,6 +27,8 @@ def output(yc1, yc2, yc3, tpi):
     print('')
     print('Average Tiffeneau-Pinelli Index: ', '%.4f' % tpi)
     print('')
+    print('95% Confidence Interval: ' + '[%.4f' % ci[0] + ', ' +  '%.4f]' % ci[1])
+    print('')
     print('=== SUMMARY REPORT ===')
     print('')
 
@@ -39,9 +41,9 @@ y = func(x, 5, 5, 2)
 # Generate noise.
 yn1 = y + np.random.normal(0,0.1,len(x))
 yn1[0] = 0
-yn2 = y + np.random.normal(0,0.4,len(x))
+yn2 = y + np.random.normal(0,0.2,len(x))
 yn2[0] = 0
-yn3 = y + np.random.normal(0,0.6,len(x))
+yn3 = y + np.random.normal(0,0.4,len(x))
 yn3[0] = 0
 
 # Hash defines go here.
@@ -85,8 +87,18 @@ yc2 = func(x, *popt2)
 yc3 = func(x, *popt3)
 tpi = round(float((yc1[FEV1_INDEX]/yc1[FVC_INDEX] + yc2[FEV1_INDEX]/yc2[FVC_INDEX] + yc3[FEV1_INDEX]/yc3[FVC_INDEX])/3), 4)
 
+# Statistical Analysis
+TPI = []
+TPI.append(yc1[FEV1_INDEX]/yc1[FVC_INDEX])
+TPI.append(yc2[FEV1_INDEX]/yc2[FVC_INDEX])
+TPI.append(yc3[FEV1_INDEX]/yc3[FVC_INDEX])
+
+std = np.std(TPI, ddof=1)
+mean = np.mean(TPI)
+ci = [mean - 2.776 * std/(math.sqrt(3)), mean + 2.776 * std/(math.sqrt(3))]
+
 # Output summary report.
-output(yc1, yc2, yc3, tpi)
+output(yc1, yc2, yc3, tpi, ci)
 
 # Create the averaged subplot at the bottom.
 ax = fig.add_subplot(gs[1, :])
@@ -103,8 +115,8 @@ ax.grid(True)
 ax.legend()
 
 # Show figure.
-plt.show()
+# plt.show()
 
 # # Save figure.
 # plt.savefig('output/lung_capacity.png')
-# plt.close(fig)
+plt.close(fig)
