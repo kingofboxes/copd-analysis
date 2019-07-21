@@ -13,6 +13,12 @@ def func(x, a, b, c):
 
 # Output summary report.
 def output(yc1, yc2, yc3, tpi, ci):
+
+    # Average values for FEV1 & FVC.
+    a_fev1 = round(float((yc1[FEV1_INDEX] + yc2[FEV1_INDEX] + yc3[FEV1_INDEX])/3), 4)
+    a_fvc = round(float((yc1[FVC_INDEX] + yc2[FVC_INDEX] + yc3[FVC_INDEX])/3), 4)
+
+    # Output statements.
     print('')
     print('=== SUMMARY REPORT ===')
     print('')
@@ -25,25 +31,42 @@ def output(yc1, yc2, yc3, tpi, ci):
     print('FEV1 Trial #3:', '%.4f' % yc3[FEV1_INDEX], 'L')
     print('FVC Trial #3 :', '%.4f' % yc3[FVC_INDEX], 'L')
     print('')
+    print('Average FEV1: ', '%.4f' % a_fev1, 'L')
+    print('Average FVC:  ', '%.4f' % a_fvc, 'L')
     print('Average Tiffeneau-Pinelli Index: ', '%.4f' % tpi)
-    print('')
     print('95% Confidence Interval: ' + '[%.4f' % ci[0] + ', ' +  '%.4f]' % ci[1])
     print('')
+    ratio_check(tpi, ci[0])
     print('=== SUMMARY REPORT ===')
     print('')
+
+# Check ratios.
+def ratio_check(tpi, lci):
+    if tpi > 0.7 and lci > 0.7:
+        print('COPD Status: Safe')
+        print('Diagnosis from pulmonary expert is unnecessary.')
+        print('')
+    elif tpi > 0.7 and lci < 0.7:
+        print('COPD Status: At Risk')
+        print('Please visit a pulmonary expert for further diagnosis and testing.')
+        print('')
+    else: # doesn't consider lci > 0.7 and lci < 0.7.
+        print('COPD Status: Inflicted')
+        print('Please wait for further instructions from doctors in Australia.')
+        print('')
 
 # ===== END FUNCTIONS ===== #
 
 # Define amount of data points and initial curve.
 x = np.linspace(0, 5, 100)
-y = func(x, 5, 5, 2)
+y = func(x, 4, 4, 1)
 
 # Generate noise.
-yn1 = y + np.random.normal(0,0.1,len(x))
+yn1 = y - np.random.normal(0,0.1,len(x))
 yn1[0] = 0
 yn2 = y + np.random.normal(0,0.2,len(x))
 yn2[0] = 0
-yn3 = y + np.random.normal(0,0.4,len(x))
+yn3 = y - np.random.normal(0,0.4,len(x))
 yn3[0] = 0
 
 # Hash defines go here.
@@ -117,6 +140,6 @@ ax.legend()
 # Show figure.
 # plt.show()
 
-# # Save figure.
-# plt.savefig('output/lung_capacity.png')
+# Save figure.
+plt.savefig('output/lung_capacity.png')
 plt.close(fig)
