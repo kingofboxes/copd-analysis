@@ -82,7 +82,6 @@ if sys.argv[2] is '1':
             temp_y = [y[i] for i in range(0, len(y))]
 
         # Plot the solid lines onto the figure.
-
         if peak.index(p) != len(peak) - 1:   
             plt.plot(temp_x, temp_y, 'r-')
         else:
