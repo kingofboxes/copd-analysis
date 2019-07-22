@@ -4,6 +4,10 @@ import math
 import numpy as np
 import matplotlib.pyplot as plt
 
+# Arguments check.
+if len(sys.argv) < 3:
+    sys.exit("Usage: python3 cough_detection.py <file> <mode>")
+
 # Read all the numbers in a list.
 f = open(sys.argv[1], "r")
 y = [int(i) for i in f.read().splitlines()]

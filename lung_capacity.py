@@ -1,9 +1,18 @@
 # Import the required libraries.
+import sys
 import math
 import numpy as np
 import matplotlib.pyplot as plt
 from scipy.optimize import curve_fit
 import matplotlib.gridspec as gridspec
+
+# Arguments check.
+if len(sys.argv) != 4:
+    sys.exit("Usage: python3 lung_capacity.py <a> <b> <c>")
+
+x1 = int(sys.argv[1])
+x2 = int(sys.argv[2])
+x3 = int(sys.argv[3])
 
 # ===== FUNCTIONS ===== #
 
@@ -59,7 +68,7 @@ def ratio_check(tpi, lci):
 
 # Define amount of data points and initial curve.
 x = np.linspace(0, 5, 100)
-y = func(x, 4, 4, 1)
+y = func(x, x1, x2, x3)
 
 # Generate noise.
 yn1 = y - np.random.normal(0,0.1,len(x))
