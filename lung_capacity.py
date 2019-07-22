@@ -141,5 +141,5 @@ ax.legend()
 # plt.show()
 
 # Save figure.
-plt.savefig('output/lung_capacity.png')
+plt.savefig('out/lung_capacity.png')
 plt.close(fig)
