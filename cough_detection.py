@@ -10,7 +10,7 @@ if len(sys.argv) < 3:
 
 # Read all the numbers in a list.
 f = open(sys.argv[1], "r")
-y = [int(i) for i in f.read().splitlines()]
+y = [(int(i)/1023) * 5 for i in f.read().splitlines()]
 x = np.linspace(0, 10, len(y))
 f.close()
 
@@ -20,7 +20,7 @@ peak = []
 # Define a partition.
 par = 80                        # 10 second samples, divide again to change partition size (currently 8 partitions per second block).
 seg = int(len(y) / par)         # Each segment is 125 ms, or 0.125s.
-thres = 200                     # Threshold for coughing, manually defined.
+thres = 200/1023 * 5            # Threshold for coughing, manually defined.
 
 # Go through each partition and mark the largest point in each parititon above the threshold.
 start = 0
@@ -111,8 +111,8 @@ print('')
 
 # Show the graph.
 plt.legend()
-# plt.show()
+plt.show()
 
 # Save figure.
-plt.savefig('out/cough_detection.png')
-plt.close()
+# plt.savefig('out/cough_detection.png')
+# plt.close()
